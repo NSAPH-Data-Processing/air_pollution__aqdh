@@ -1,0 +1,6 @@
+# null means no symlink
+input:
+  raw: null
+  shapefiles: null
+
+output: null
