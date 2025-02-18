@@ -90,48 +90,47 @@ if __name__ == "__main__":
 # if __name__ == "__main__":
 #     main()
 
+# import hydra
+# from pySmartDL import SmartDL
 
-import hydra
-from pySmartDL import SmartDL
+# @hydra.main(config_path="../conf", config_name="config", version_base=None)
+# def main(cfg):
+#     # Build the URL using the configuration values.
+#     url = f"{cfg.url}{cfg.filename}"
+    
+#     request_args = {
+#         'headers': {
+#             'User-Agent': (
+#                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+#                 "AppleWebKit/537.36 (KHTML, like Gecko) "
+#                 "Chrome/58.0.3029.110 Safari/537.3"
+#             )
+#         }
+#     }
+    
+#     # Set the destination path using the filename from your config.
+#     output_filename = f"data/input/raw/{cfg.filename}"
+    
+#     # Create the SmartDL object.
+#     # The requests_params parameter is passed to the underlying requests call,
+#     # so your custom headers are used.
+#     obj = SmartDL(
+#         url,
+#         output_filename,
+#         progress_bar=True,  # Enables a built-in progress bar.
+#         request_args=request_args,  # Pass your headers here.
+#         timeout=30,
+#         verify=False  # Disable certificate verification for testing purposes
+#     )
+    
+#     # Start the download (blocking call).
+#     obj.start(blocking=True)
+    
+#     # Check if the download was successful.
+#     if obj.isSuccessful():
+#         print("Download completed successfully.")
+#     else:
+#         print("Download failed. Exception:", obj.get_exception())
 
-@hydra.main(config_path="../conf", config_name="config", version_base=None)
-def main(cfg):
-    # Build the URL using the configuration values.
-    url = f"{cfg.url}{cfg.filename}"
-    
-    request_args = {
-        'headers': {
-            'User-Agent': (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/58.0.3029.110 Safari/537.3"
-            )
-        }
-    }
-    
-    # Set the destination path using the filename from your config.
-    output_filename = f"data/input/raw/{cfg.filename}"
-    
-    # Create the SmartDL object.
-    # The requests_params parameter is passed to the underlying requests call,
-    # so your custom headers are used.
-    obj = SmartDL(
-        url,
-        output_filename,
-        progress_bar=True,  # Enables a built-in progress bar.
-        request_args=request_args,  # Pass your headers here.
-        timeout=30,
-        verify=False  # Disable certificate verification for testing purposes
-    )
-    
-    # Start the download (blocking call).
-    obj.start(blocking=True)
-    
-    # Check if the download was successful.
-    if obj.isSuccessful():
-        print("Download completed successfully.")
-    else:
-        print("Download failed. Exception:", obj.get_exception())
-
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
