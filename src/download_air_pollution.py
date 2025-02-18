@@ -27,7 +27,7 @@ def main(cfg):
     if response.status_code == 200:
         # Get total file size from headers
         total_size = int(response.headers.get('content-length', 0))
-        chunk_size = 1024  # 1 KB per chunk
+        chunk_size = 104857600  # 100 MB per chunk
         output_filename = f"data/input/raw/{cfg.filename}"
         
         with open(output_filename, "wb") as f, tqdm(
