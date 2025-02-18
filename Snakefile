@@ -1,12 +1,10 @@
-# Define parameters
-pollutant_list = config["pollutant_list"]
-years = [str(y) for y in config["years"]]
-months = [f"{m:02d}" for m in config["months"]]
-yyyymm_list = [y + m for y in years for m in months]
+conda: "environment.yaml"
+configfile: "snake_config.yaml"
 
-pollutant_list = ["pm2-5", "no2", "o3"]
-years = [str(y) for y in range(2000, 2001)]  # 2000 to 2016
-months = [f"{m:02d}" for m in range(1, 2)]  # 01 to 12
+# Define parameters
+pollutant_list = config.get("pollutant_list")
+years = [str(y) for y in config.get("years")]
+months = [f"{m:02d}" for m in config.get("months")]
 yyyymm_list = [y + m for y in years for m in months]
 
 # Rule to generate all required files
