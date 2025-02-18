@@ -4,7 +4,7 @@ configfile: "snake_config.yaml"
 # Define parameters
 pollutant_list = config.get("pollutant_list")
 years = [str(y) for y in config.get("years")]
-months = [f"{m:02d}" for m in config.get("months")]
+months = [f"{int(m):02d}" for m in config.get("months")]
 yyyymm_list = [y + m for y in years for m in months]
 
 # Rule to generate all required files
