@@ -3,8 +3,6 @@ input:
   raw: /n/dominici_lab/lab/lego/environmental/air_pollution__aqdh/raw
   shapefiles: null
 
-intermediate: /n/dominici_lab/lab/lego/environmental/air_pollution__aqdh/.county_daily__intermediate
-
 output: 
   daily: /n/dominici_lab/lab/lego/environmental/air_pollution__aqdh/county_daily
   yearly: /n/dominici_lab/lab/lego/environmental/air_pollution__aqdh/county_yearly
