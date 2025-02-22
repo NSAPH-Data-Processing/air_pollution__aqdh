@@ -4,9 +4,10 @@ defaults:
 
 #aqdh
 url: "https://sedac.ciesin.columbia.edu/downloads/data/aqdh/aqdh-${pollutant}-concentrations-contiguous-us-1-km-v1-10-2000-2016/"
-filename: "aqdh-${pollutant}-concentrations-contiguous-us-1-km-v1-10-2000-2016-${yyyymm}-geotiff.zip"
-pollutant: pollutant #"no2", "o3", "pm2-5"
-yyyymm: yyyymm #200001  # Default value (you can override this dynamically)
+filename: "aqdh-{pollutant}-concentrations-contiguous-us-1-km-v1-10-2000-2016-{yyyymm}-geotiff"
+pollutant: "pm2-5" # "o3", "no2" 
+year: 2000
+month: 1
 
 hydra:
   run:
