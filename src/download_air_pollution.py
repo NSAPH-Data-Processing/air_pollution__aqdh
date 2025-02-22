@@ -6,7 +6,17 @@ from tqdm import tqdm
 
 @hydra.main(config_path="../conf", config_name="config", version_base=None)
 def main(cfg):
-    url = f"{cfg.url}{cfg.filename}"
+    replacements = {
+        "pollutant": cfg.pollutant,
+        "yyyymm": f"{cfg.year}{cfg.month:02d}"
+    }
+    filename = cfg.filename.format(**replacements)
+    url = f"{cfg.url}{filename}"
+    
+    # headers = {
+    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    # }
+
     headers = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -14,7 +24,6 @@ def main(cfg):
         "Accept-Language": "en-US,en;q=0.5",
         "Connection": "keep-alive"
     }
-
 
     session = requests.Session()
     retry = Retry(
@@ -33,7 +42,7 @@ def main(cfg):
         # Get total file size from headers
         total_size = int(response.headers.get('content-length', 0))
         chunk_size = 104857600  # 100 MB per chunk
-        output_filename = f"data/input/raw/{cfg.filename}"
+        output_filename = f"data/input/raw/{filename}.zip"
         
         with open(output_filename, "wb") as f, tqdm(
             total=total_size, unit='B', unit_scale=True, desc="Downloading"
