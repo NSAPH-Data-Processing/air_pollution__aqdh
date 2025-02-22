@@ -5,37 +5,38 @@ import hydra
 conda: "environment.yaml"
 configfile: "snake_config.yaml"
 
-# load hydra configuration
 # Load Hydra config
-cfg = OmegaConf.load("config.yaml")  # Directly load YAML as a dict
+cfg = OmegaConf.load("conf/config.yaml")  # Directly load YAML as a dict
 
 # Define parameters
 pollutant_list = config.get("pollutant_list")
-years = [int(y) for y in config.get("years")]
-months = [int(m) for m in config.get("months")]
-yyyymm_list = [f"{y}{m:02d}" for y in years for m in months]
-yyyymmdd_list = [
-    f"{y}{m:02d}{d:02d}"
-    for y in years
-    for m in months
-    for d in range(1, calendar.monthrange(y, m)[1] + 1)
-]
+yyyy_list = config.get("yyyy_list")
+mm_list = config.get("mm_list")
+# yyyymmdd_list = [
+#     f"{y}{m:02d}{d:02d}"
+#     for y in config.get("years")
+#     for m in config.get("months")
+#     for d in range(1, calendar.monthrange(y, m)[1] + 1)
+# ]
 
 # Rule to generate all required files
 rule all:
     input:
         expand(
-            cfg.filename + ".zip", 
+            "data/input/raw/" + cfg.zip_filename + ".zip", 
             pollutant=pollutant_list, 
-            yyyymm=yyyymm_list
+            yyyy=yyyy_list,
+            mm=mm_list
         )
 
 # Rule to download air pollution data
 rule download_air_pollution:
     output:
-        cfg.filename + ".zip"
+        "data/input/raw/" + cfg.zip_filename + ".zip"
+    wildcard_constraints:
+        yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
     shell:
         """
-        echo "Downloading geotiff for pollutant {wildcards.pollutant} and yyyymm {wildcards.yyyymm}"
-        python src/download_air_pollution.py pollutant={wildcards.pollutant} yyyymm={wildcards.yyyymm}
+        echo "Downloading geotiff for pollutant {wildcards.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}"
+        python src/download_air_pollution.py pollutant={wildcards.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
         """

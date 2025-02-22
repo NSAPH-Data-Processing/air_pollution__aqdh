@@ -6,12 +6,13 @@ def main(cfg):
     # Define the paths
     replacements = {
         "pollutant": cfg.pollutant,
-        "yyyymm": f"{cfg.year}{cfg.month:02d}"
+        "yyyy": cfg.yyyy,
+        "mm": cfg.mm
     }
-    filename = cfg.filename.format(**replacements)
+    zip_filename = cfg.zip_filename.format(**replacements)
 
-    zip_file_path = f"data/input/raw/{filename}.zip"
-    extract_to_path = f"data/intermediate/{filename}/"
+    zip_file_path = f"data/input/raw/{zip_filename}.zip"
+    extract_to_path = f"data/intermediate/{zip_filename}/"
 
     # Unzip the file
     with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
