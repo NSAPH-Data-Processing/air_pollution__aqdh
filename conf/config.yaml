@@ -6,13 +6,15 @@ defaults:
 url: "https://sedac.ciesin.columbia.edu/downloads/data/aqdh/aqdh-{pollutant_code}-concentrations-contiguous-us-1-km-v1-10-2000-2016/"
 zip_filename: "aqdh-{pollutant_code}-concentrations-contiguous-us-1-km-v1-10-2000-2016-{yyyy}{mm}-geotiff"
 
-pollutant: "pm25" # "o3", "no2" 
-yyyy: '2000'
-mm: '03'
-pollutant_code:
+pollutant_code_map:
   o3: "o3"
   no2: "no2"
   pm25: "pm2-5"
+
+pollutant: "pm25" # "o3", "no2" 
+yyyy: '2000'
+mm: '02'
+pollutant_code: "pm2-5"
 
 tif_filename:
   o3: Ensemble_predictions_O3_USGrid_{yyyymmdd}_{yyyymmdd}
