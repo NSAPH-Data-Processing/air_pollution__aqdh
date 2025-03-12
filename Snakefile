@@ -14,7 +14,7 @@ yyyy_list = config.get("yyyy_list")
 mm_list = config.get("mm_list")
 
 # Invert the dictionary
-inv_pollutant_code = {v: k for k, v in cfg.pollutant_code.items()}
+#inv_pollutant_code_map = {v: k for k, v in cfg.pollutant_code_map.items()}
 
 # yyyymmdd_list = [
 #     f"{y}{m}{d:02d}"
@@ -27,11 +27,18 @@ inv_pollutant_code = {v: k for k, v in cfg.pollutant_code.items()}
 rule all:
     input:
         expand(
-            "data/intermediate/" + cfg.zip_filename + "/",
-            pollutant_code=[cfg.pollutant_code[pollutant] for pollutant in pollutant_list],
+            f"data/intermediate/{{pollutant}}_aqdh__{cfg.shp_id}_daily__{{yyyy}}{{mm}}.parquet",
+            pollutant=pollutant_list,
             yyyy=yyyy_list,
             mm=mm_list
         )
+    # input:
+    #     expand(
+    #         "data/intermediate/" + cfg.zip_filename + "/",
+    #         pollutant_code=[cfg.pollutant_code[pollutant] for pollutant in pollutant_list],
+    #         yyyy=yyyy_list,
+    #         mm=mm_list
+    #     )
 
 # def zip_filename(wildcards):
 #     replacements = {
@@ -54,17 +61,43 @@ rule all:
 #         python src/download_air_pollution.py pollutant={wildcards.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
 #         """
 
+# rule download_air_pollution:
+#     output:
+#         "data/input/raw/" + cfg.zip_filename + ".zip"
+#     wildcard_constraints:
+#         yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
+#     params:
+#         pollutant= lambda wildcards: inv_pollutant_code[wildcards.pollutant_code]  # Resolves pollutant_code dynamically
+#     shell:
+#         """
+#         echo "Downloading geotiff for pollutant {params.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}"
+#         python src/download_air_pollution.py pollutant={params.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
+#         """
+
+# rule unzip_air_pollution:
+#     input:
+#         "data/input/raw/" + cfg.zip_filename + ".zip"
+#     output:
+#         directory("data/intermediate/" + cfg.zip_filename + "/")
+#     wildcard_constraints:
+#         yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
+#     params:
+#         pollutant= lambda wildcards: inv_pollutant_code[wildcards.pollutant_code]  # Resolves pollutant_code dynamically
+#     shell:
+#         """
+#          echo "Unzipping {input} -> {output}"
+#          python src/extract_zipped.py pollutant={params.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
+#         """
+
 rule download_air_pollution:
     output:
         "data/input/raw/" + cfg.zip_filename + ".zip"
     wildcard_constraints:
         yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
-    params:
-        pollutant= lambda wildcards: inv_pollutant_code[wildcards.pollutant_code]  # Resolves pollutant_code dynamically
     shell:
         """
-        echo "Downloading geotiff for pollutant {params.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}"
-        python src/download_air_pollution.py pollutant={params.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
+        echo "Downloading geotiff for pollutant {wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}"
+        python src/download_air_pollution.py pollutant={wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}
         """
 
 rule unzip_air_pollution:
@@ -74,43 +107,21 @@ rule unzip_air_pollution:
         directory("data/intermediate/" + cfg.zip_filename + "/")
     wildcard_constraints:
         yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
-    params:
-        pollutant= lambda wildcards: inv_pollutant_code[wildcards.pollutant_code]  # Resolves pollutant_code dynamically
     shell:
         """
          echo "Unzipping {input} -> {output}"
-         python src/extract_zipped.py pollutant={params.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
+         python src/extract_zipped.py pollutant_code={wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}
         """
 
-# rule unzip_air_pollution:
-#     input:
-#         lambda wildcards: zip_filename(wildcards)  # Ensures correct filename resolution
-#     output:
-#         directory("data/intermediate/" + cfg.zip_filename.format(
-#             pollutant_code="{pollutant_code}",  # Leave as wildcard
-#             yyyy="{yyyy}",
-#             mm="{mm}"
-#         ) + "/")
-#     wildcard_constraints:
-#         yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
-#     params:
-#         pollutant_code = lambda wildcards: cfg.pollutant_code[wildcards.pollutant]  # Resolves pollutant_code dynamically
-#     shell:
-#         """
-#         echo "Unzipping {input} -> {output}"
-#         python src/extract_zipped.py pollutant={wildcards.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
-#         """
-
-# rule aggregate_air_pollution:
-#     input:
-#         unzip_filename
-#     output:
-#         f"data/intermediate/{{pollutant}}_aqdh__{cfg.shp_id}_daily__{{yyyy}}{{mm}}.parquet"
-#     wildcard_constraints:
-#         yyyy = r"\d{4}",  # Ensures yyyy is exactly 4 digits
-#         mm = r"\d{2}"  # Ensures mm is exactly 2 digits
-#     shell:
-#         """
-#         echo "Aggregating {input}"
-#         python src/aggregate_air_pollution.py pollutant={wildcards.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
-#         """
+rule aggregate_air_pollution:
+    input:
+        lambda wildcards: "data/intermediate/" + cfg.zip_filename.format(pollutant_code=cfg.pollutant_code_map[wildcards.pollutant], yyyy=wildcards.yyyy, mm=wildcards.mm) + "/"
+    output:
+        f"data/intermediate/{{pollutant}}_aqdh__{cfg.shp_id}_daily__{{yyyy}}{{mm}}.parquet"
+    wildcard_constraints:
+        yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
+    shell:
+        """
+        echo "Aggregating {input}"
+        PYTHONPATH='.' python src/aggregate_air_pollution.py pollutant={wildcards.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
+        """
