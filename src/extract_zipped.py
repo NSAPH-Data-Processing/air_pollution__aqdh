@@ -5,7 +5,7 @@ import hydra
 def main(cfg):
     # Define the paths
     replacements = {
-        "pollutant": cfg.pollutant,
+        "pollutant_code": cfg.pollutant_code[cfg.pollutant],
         "yyyy": cfg.yyyy,
         "mm": cfg.mm
     }

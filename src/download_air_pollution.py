@@ -7,12 +7,12 @@ from tqdm import tqdm
 @hydra.main(config_path="../conf", config_name="config", version_base=None)
 def main(cfg):
     replacements = {
-        "pollutant": cfg.pollutant,
+        "pollutant_code": cfg.pollutant_code[cfg.pollutant],
         "yyyy": cfg.yyyy,
         "mm": cfg.mm # input has to be 2 digits month:02d
     }
     zip_filename = cfg.zip_filename.format(**replacements)
-    zip_url = f"{cfg.url}{zip_filename}.zip"
+    zip_url = f"{cfg.url.format(**replacements)}{zip_filename}.zip"
     
     # headers = {
     #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
