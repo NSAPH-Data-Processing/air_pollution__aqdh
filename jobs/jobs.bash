@@ -3,7 +3,7 @@
 sbatch jobs/pm25_2000.sbatch
 sbatch jobs/pm25_2001.sbatch
 sbatch jobs/pm25_2002.sbatch
-sbatch jobs/pm252003.sbatch
+sbatch jobs/pm25_2003.sbatch
 sbatch jobs/pm25_2004.sbatch
 sbatch jobs/pm25_2005.sbatch
 sbatch jobs/pm25_2006.sbatch
