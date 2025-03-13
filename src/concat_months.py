@@ -3,8 +3,9 @@ import hydra
 
 @hydra.main(config_path="../conf", config_name="config", version_base=None)
 def main(cfg):
-    input_prefix = f"data/intermediate/{cfg.pollutant}_aqdh__{cfg.shp_id}_daily__{cfg.yyyy}"
-    output_prefix = f"data/output/{cfg.shp_id}_daily/{cfg.pollutant}_aqdh__{cfg.shp_id}_daily__{cfg.yyyy}"
+    file_prefix = f"{cfg.pollutant}_aqdh__{cfg.shp_id}_daily__{cfg.yyyy}"
+    input_prefix = f"data/intermediate/{file_prefix}"
+    output_prefix = f"data/output/daily/{file_prefix}"
     
     conn = duckdb.connect()
     conn.execute(f"""
