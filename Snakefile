@@ -16,34 +16,33 @@ mm_list = config.get("mm_list")
 rule all:
     input:
         expand(
-            f"data/output/daily/{{pollutant}}_aqdh__{cfg.shp_id}_daily__{{yyyy}}.parquet",
-            pollutant=pollutant_list,
+            f"data/output/daily/air_pollution__aqdh__{cfg.shp_id}_daily__{{yyyy}}.parquet",
             yyyy=yyyy_list
         )
 
-# rule download_air_pollution:
-#     output:
-#         "data/input/raw/" + cfg.zip_filename + ".zip"
-#     wildcard_constraints:
-#         yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
-#     shell:
-#         """
-#         echo "Downloading geotiff for pollutant {wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}"
-#         python src/download_air_pollution.py pollutant={wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}
-#         """
+rule download_air_pollution:
+    output:
+        "data/input/raw/" + cfg.zip_filename + ".zip"
+    wildcard_constraints:
+        yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
+    shell:
+        """
+        echo "Downloading geotiff for pollutant {wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}"
+        python src/download_air_pollution.py pollutant_code={wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}
+        """
 
-# rule unzip_air_pollution:
-#     input:
-#         "data/input/raw/" + cfg.zip_filename + ".zip"
-#     output:
-#         directory("data/intermediate/" + cfg.zip_filename + "/")
-#     wildcard_constraints:
-#         yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
-#     shell:
-#         """
-#          echo "Unzipping {input} -> {output}"
-#          python src/extract_zipped.py pollutant_code={wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}
-#         """
+rule unzip_air_pollution:
+    input:
+        "data/input/raw/" + cfg.zip_filename + ".zip"
+    output:
+        directory("data/intermediate/" + cfg.zip_filename + "/")
+    wildcard_constraints:
+        yyyy = r"\d{4}"  # Ensures yyyy is exactly 4 digits
+    shell:
+        """
+         echo "Unzipping {input} -> {output}"
+         python src/extract_zipped.py pollutant_code={wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}
+        """
 
 rule aggregate_air_pollution:
     input:
@@ -58,18 +57,18 @@ rule aggregate_air_pollution:
         PYTHONPATH='.' python src/aggregate_air_pollution.py pollutant={wildcards.pollutant} yyyy={wildcards.yyyy} mm={wildcards.mm}
         """
 
-rule concat_air_pollution:
+rule merge_air_pollution:
     input:
         lambda wildcards: expand(
             f"data/intermediate/{{pollutant}}_aqdh__{cfg.shp_id}_daily__{{yyyy}}{{mm}}.parquet",
-            pollutant=wildcards.pollutant,
+            pollutant=pollutant_list,
             yyyy=wildcards.yyyy,
             mm=mm_list
         )
     output:
-        f"data/output/daily/{{pollutant}}_aqdh__{cfg.shp_id}_daily__{{yyyy}}.parquet"
+        f"data/output/daily/air_pollution__aqdh__{cfg.shp_id}_daily__{{yyyy}}.parquet"
     shell:
         """
-        echo "Concatenating {input}"
-        python src/concat_months.py pollutant={wildcards.pollutant} yyyy={wildcards.yyyy}
+        echo "Merging {input}"
+        python src/merge_pollutants.py yyyy={wildcards.yyyy}
         """
