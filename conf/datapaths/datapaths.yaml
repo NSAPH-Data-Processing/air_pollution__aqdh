@@ -2,6 +2,7 @@
 input:
   raw: null
   shapefiles: null
+  unique_id: null
 
 intermediate: null
 

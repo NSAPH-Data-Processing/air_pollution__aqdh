@@ -7,7 +7,7 @@ from tqdm import tqdm
 @hydra.main(config_path="../conf", config_name="config", version_base=None)
 def main(cfg):
     replacements = {
-        "pollutant_code": cfg.pollutant_code[cfg.pollutant],
+        "pollutant_code": cfg.pollutant_code, #cfg.pollutant_code[cfg.pollutant],
         "yyyy": cfg.yyyy,
         "mm": cfg.mm # input has to be 2 digits month:02d
     }
