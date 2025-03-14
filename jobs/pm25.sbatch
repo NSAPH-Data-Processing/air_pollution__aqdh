@@ -5,4 +5,4 @@
 #SBATCH --mem 64GB # memory per job in the array
 #SBATCH -t 0-1:00 # time (D-HH:MM)
 
-snakemake --cores 8 --config pollutant_list="['pm25']"
+snakemake --snakefile Snakefile_aggregate --cores 8 --config pollutant_list="['pm25']"
