@@ -1,9 +1,13 @@
+#null means base_path is data/
+base_path: null
+
 # null means no symlink
-input:
-  raw: null
-  shapefiles: null
-  unique_id: null
+dirs:
+  input:
+    raw: null
+    shapefiles: null
+    unique_id: null
 
-intermediate: null
+  intermediate: null
 
-output: null
+  output: null
