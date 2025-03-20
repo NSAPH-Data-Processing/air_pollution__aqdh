@@ -97,7 +97,7 @@ rule download_air_pollution:
     shell:
         """
         echo "Downloading geotiff for pollutant {wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}"
-        python src/download_air_pollution.py pollutant={wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}
+        python src/download_air_pollution.py pollutant_code={wildcards.pollutant_code} yyyy={wildcards.yyyy} mm={wildcards.mm}
         """
 
 rule unzip_air_pollution:
