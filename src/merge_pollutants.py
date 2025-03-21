@@ -16,7 +16,7 @@ def main(cfg):
     # create unique shp ids
     unique_shp_ids_df = conn.execute(f"""
         SELECT {cfg.shp_id} 
-        FROM 'data/input/unique_id/{cfg.unique_id_filename.format(yyyy=cfg.yyyy)}'
+        FROM '{cfg.datapaths.base_path}/input/unique_id/{cfg.unique_id_filename.format(yyyy=cfg.yyyy)}'
     """).fetch_df()
     # create a full combination of all unique dates and unique shp ids
     index_df = unique_dates_df.merge(unique_shp_ids_df, how="cross")
@@ -31,7 +31,7 @@ def main(cfg):
             CREATE TABLE {pollutant}_table AS
             SELECT i.date, i.{cfg.shp_id}, p.{pollutant} AS {pollutant}
             FROM index AS i
-            LEFT JOIN 'data/intermediate/{pollutant}_aqdh__{cfg.shp_id}_daily__{cfg.yyyy}*.parquet' AS p
+            LEFT JOIN '{cfg.datapaths.base_path}/intermediate/{pollutant}_aqdh__{cfg.shp_id}_daily__{cfg.yyyy}*.parquet' AS p
             ON i.date = p.date AND i.{cfg.shp_id} = p.{cfg.shp_id}
             ORDER BY i.date, i.{cfg.shp_id}
         """
@@ -51,7 +51,7 @@ def main(cfg):
     """
     print(query)
 
-    output_filename = f"data/output/daily/air_pollution__aqdh__{cfg.shp_id}_daily__{cfg.yyyy}.parquet"
+    output_filename = f"{cfg.datapaths.base_path}/output/daily/air_pollution__aqdh__{cfg.shp_id}_daily__{cfg.yyyy}.parquet"
     conn.execute(f"COPY ({query}) TO '{output_filename}'")
     conn.close()
     

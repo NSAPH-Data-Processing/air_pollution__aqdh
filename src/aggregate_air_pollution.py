@@ -16,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 @hydra.main(config_path="../conf", config_name="config", version_base=None)
 def main(cfg):
     # read shapefile
-    shp_path = f"data/input/shapefiles/{cfg.shp_filename.format(yyyy=cfg.yyyy)}/{cfg.shp_filename.format(yyyy=cfg.yyyy)}.shp"
+    shp_path = f"{cfg.datapaths.base_path}/input/shapefiles/{cfg.shp_filename.format(yyyy=cfg.yyyy)}/{cfg.shp_filename.format(yyyy=cfg.yyyy)}.shp"
     LOGGER.info(f"Reading shapefile {shp_path}")
     shp = gpd.read_file(shp_path)
     LOGGER.info(f"Read shapefile with head\n: {shp.drop(columns='geometry').head()}")
@@ -28,7 +28,7 @@ def main(cfg):
         "yyyy": cfg.yyyy,
         "mm": cfg.mm
     }
-    zip_filename = f"data/intermediate/{cfg.zip_filename.format(**replacements)}/"
+    zip_filename = f"{cfg.datapaths.base_path}/intermediate/{cfg.zip_filename.format(**replacements)}/"
 
     yyyymmdd_list = [
     f"{cfg.yyyy}{cfg.mm}{d:02d}"
@@ -148,7 +148,7 @@ def main(cfg):
     LOGGER.info(f"Generated dataframe with head\n: {df.head()}")
     
     # store in parquet
-    output_filename = f"data/intermediate/{cfg.pollutant}_aqdh__{cfg.shp_id}_daily__{cfg.yyyy}{cfg.mm}.parquet"
+    output_filename = f"{cfg.datapaths.base_path}/intermediate/{cfg.pollutant}_aqdh__{cfg.shp_id}_daily__{cfg.yyyy}{cfg.mm}.parquet"
     LOGGER.info(f"Writing output to {output_filename}")
     df.to_parquet(output_filename, index=False)
     LOGGER.info("Done")
