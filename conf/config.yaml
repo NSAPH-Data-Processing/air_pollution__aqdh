@@ -1,6 +1,6 @@
 defaults:
   - _self_
-  - datapaths: datapaths
+  - datapaths: zcta_cannon
 
 #aqdh
 url: "https://sedac.ciesin.columbia.edu/downloads/data/aqdh/aqdh-{pollutant_code}-concentrations-contiguous-us-1-km-v1-10-2000-2016/"
@@ -23,10 +23,10 @@ tif_filename:
   no2: PredictionStep2_NO2_USGrid_{yyyymmdd}_{yyyymmdd}
  
 
-shp_filename: us_shapefile__census__county_yearly__{yyyy} #us_shapefile__census__zcta_yearly__{yyyy}
-shp_id: "county"
+shp_filename: us_shapefile__census__zcta_yearly__{yyyy}
+shp_id: "zcta"
 
-unique_id_filename: us_uniqueid__census__county_yearly__{yyyy}.parquet
+unique_id_filename: us_uniqueid__census__zcta_yearly__{yyyy}.parquet
 
 hydra:
   run:
