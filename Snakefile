@@ -18,7 +18,7 @@ mm_list = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12
 rule all:
     input:
         expand(
-            f"{cfg.datapaths.base_path}/output/daily/air_pollution__aqdh__{cfg.shp_id}_daily__{{yyyy}}.parquet",
+            f"{cfg.datapaths.base_path}/output/yearly/air_pollution__aqdh__{cfg.shp_id}_yearly__{{yyyy}}.parquet",
             yyyy=yyyy_list
         )
 
@@ -73,4 +73,15 @@ rule merge_air_pollution:
         """
         echo "Merging {input}"
         python src/merge_pollutants.py yyyy={wildcards.yyyy}
+        """
+
+rule daily_to_yearly:
+    input:
+        f"{cfg.datapaths.base_path}/output/daily/air_pollution__aqdh__{cfg.shp_id}_daily__{{yyyy}}.parquet"
+    output:
+        f"{cfg.datapaths.base_path}/output/yearly/air_pollution__aqdh__{cfg.shp_id}_yearly__{{yyyy}}.parquet"
+    shell:
+        """
+        echo "Averaging from daily to yearly {input}"
+        python src/daily2yearly.py yyyy={wildcards.yyyy}
         """
