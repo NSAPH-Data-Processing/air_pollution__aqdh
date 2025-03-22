@@ -10,4 +10,6 @@ dirs:
 
   intermediate: null
 
-  output: null
+  output: 
+    daily: null
+    yearly: null
