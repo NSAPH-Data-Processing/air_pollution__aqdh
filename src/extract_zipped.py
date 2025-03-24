@@ -11,8 +11,8 @@ def main(cfg):
     }
     zip_filename = cfg.zip_filename.format(**replacements)
 
-    zip_file_path = f"data/input/raw/{zip_filename}.zip"
-    extract_to_path = f"data/intermediate/{zip_filename}/"
+    zip_file_path = f"{cfg.datapaths.base_path}/input/raw/{zip_filename}.zip"
+    extract_to_path = f"{cfg.datapaths.base_path}/intermediate/{zip_filename}/"
 
     # Unzip the file
     with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:

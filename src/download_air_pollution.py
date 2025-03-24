@@ -43,7 +43,7 @@ def main(cfg):
         # Get total file size from headers
         total_size = int(response.headers.get('content-length', 0))
         chunk_size = 104857600  # 100 MB per chunk
-        output_filename = f"data/input/raw/{zip_filename}.zip"
+        output_filename = f"{cfg.datapaths.base_path}/input/raw/{zip_filename}.zip"
         
         with open(output_filename, "wb") as f, tqdm(
             total=total_size, unit='B', unit_scale=True, desc=f"Downloading {zip_filename}"
