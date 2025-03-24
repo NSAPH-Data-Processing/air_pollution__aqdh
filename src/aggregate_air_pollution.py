@@ -16,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 @hydra.main(config_path="../conf", config_name="config", version_base=None)
 def main(cfg):
     # read shapefile
-    shp_path = f"data/input/shapefiles/{cfg.shp_filename.format(yyyy=cfg.yyyy)}/{cfg.shp_filename.format(yyyy=cfg.yyyy)}.shp"
+    shp_path = f"{cfg.datapaths.base_path}/input/shapefiles/{cfg.shp_filename.format(yyyy=cfg.yyyy)}/{cfg.shp_filename.format(yyyy=cfg.yyyy)}.shp"
     LOGGER.info(f"Reading shapefile {shp_path}")
     shp = gpd.read_file(shp_path)
     LOGGER.info(f"Read shapefile with head\n: {shp.drop(columns='geometry').head()}")
@@ -24,11 +24,11 @@ def main(cfg):
         
     # read tif
     replacements = {
-        "pollutant": cfg.pollutant,
+        "pollutant_code": cfg.pollutant_code_map[cfg.pollutant],
         "yyyy": cfg.yyyy,
         "mm": cfg.mm
     }
-    zip_filename = f"data/intermediate/{cfg.zip_filename.format(**replacements)}/"
+    zip_filename = f"{cfg.datapaths.base_path}/intermediate/{cfg.zip_filename.format(**replacements)}/"
 
     yyyymmdd_list = [
     f"{cfg.yyyy}{cfg.mm}{d:02d}"
@@ -77,11 +77,13 @@ def main(cfg):
         # Reproject the shapefile to the raster's CRS
         # It must be ESRI:102010 (North America Lambert Conformal Conic)
         shp = shp.to_crs("ESRI:102010") 
-        LOGGER.info("Reprojected CRS:", shp.crs)
+        #LOGGER.info("Reprojected CRS:", shp.crs)
+        print("Reprojected CRS:", shp.crs)
         
         # Crop the shapefile to the raster's extent
         shp = shp.cx[src.bounds.left:src.bounds.right, src.bounds.bottom:src.bounds.top]
-        LOGGER.info("Cropped shapefile with head\n:", shp.drop(columns='geometry').head())
+        #LOGGER.info("Cropped shapefile with head\n:", shp.drop(columns='geometry').head())
+        print("Cropped shapefile with head\n:", shp.drop(columns='geometry').head())
         
         # # plot the shapefile: for debugging purposes
         # import matplotlib.pyplot as plt
@@ -102,7 +104,7 @@ def main(cfg):
         LOGGER.info(f"Generated polygon to cell mapping with length {len(poly2cells)}")
     
     df_list = []
-    for i, yyyymmdd in tqdm(enumerate(yyyymmdd_list)):
+    for yyyymmdd in tqdm(yyyymmdd_list):
         tif_path = f"{zip_filename}{cfg.tif_filename[cfg.pollutant].format(yyyymmdd=yyyymmdd)}.tif"
         
         stats = []
@@ -128,7 +130,7 @@ def main(cfg):
         date = datetime.strptime(yyyymmdd, '%Y%m%d').date()
         polygon_ids = shp[cfg.shp_id].values
         df = pd.DataFrame(
-            {"date": date, cfg.output_varname[cfg.pollutant]: stats},
+            {"date": date, cfg.pollutant: stats},
             index=pd.Index(polygon_ids, name=cfg.shp_id)
         )
         df_list.append(df)
@@ -137,7 +139,7 @@ def main(cfg):
         # import matplotlib.pyplot as plt
         # # convert to geopandas for image
         # gdf = gpd.GeoDataFrame(df, geometry=shp.geometry.values, crs=shp.crs)
-        # gdf.plot(column=cfg.output_varname[cfg.pollutant], legend=True)
+        # gdf.plot(column=cfg.pollutant, legend=True)
         # plt.savefig("temp_output.png")
     
     # concatenate all periods
@@ -146,7 +148,7 @@ def main(cfg):
     LOGGER.info(f"Generated dataframe with head\n: {df.head()}")
     
     # store in parquet
-    output_filename = f"data/intermediate/{cfg.output_varname[cfg.pollutant]}_aqdh__{cfg.shp_id}_daily__{cfg.yyyy}{cfg.mm}.parquet"
+    output_filename = f"{cfg.datapaths.base_path}/intermediate/{cfg.pollutant}_aqdh__{cfg.shp_id}_daily__{cfg.yyyy}{cfg.mm}.parquet"
     LOGGER.info(f"Writing output to {output_filename}")
     df.to_parquet(output_filename, index=False)
     LOGGER.info("Done")

@@ -1,0 +1,15 @@
+#null means base_path is data/
+base_path: data/county
+
+# null means no symlink
+dirs:
+  input:
+    raw: /n/netscratch/dominici_lab/Lab/projects/lego/environmental/air_pollution__aqdh/raw/ #/n/dominici_lab/lab/lego/environmental/air_pollution__aqdh/raw
+    shapefiles: /n/dominici_lab/lab/lego/geoboundaries/us_geoboundaries__census/us_shapefile__census/county_yearly/
+    unique_id: /n/dominici_lab/lab/lego/geoboundaries/us_geoboundaries__census/us_uniqueid__census/county_yearly/
+
+  intermediate: /n/netscratch/dominici_lab/Lab/projects/lego/environmental/air_pollution__aqdh/.intermediate/ #/n/dominici_lab/lab/lego/environmental/air_pollution__aqdh/.intermediate
+
+  output: 
+    daily: /n/dominici_lab/lab/lego/environmental/air_pollution__aqdh/county_daily/
+    yearly: /n/dominici_lab/lab/lego/environmental/air_pollution__aqdh/county_yearly/
